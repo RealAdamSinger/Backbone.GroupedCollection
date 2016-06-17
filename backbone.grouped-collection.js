@@ -85,12 +85,11 @@
         vc, group, vc_options;
 
     vc_options = _.extend(options.vc_options || {}, {
-      filter: function (model) {
+      filter: options.groupBy !== undefined ? function (model) {
         return options.groupBy(model) === group_id;
-      },
+      } : undefined,
       close_with: options.close_with
-    });
-
+    });    
     vc = new Backbone.VirtualCollection(options.collection, vc_options);
     group = new Constructor({id: group_id, vc: vc});
     group.vc = vc;
@@ -133,9 +132,13 @@
    *
    * @param {Object} options
    */
-  Lib._onReset = function (options) {
+  Lib._onReset = function (options) {    
     var group_ids = _.uniq(options.collection.map(options.groupBy));
-    options.group_collection.reset(_.map(group_ids, _.partial(Lib._createGroup, options)));
+    var group_models = _.map(group_ids, _.partial(Lib._createGroup, options));
+    if(options.allGroup){
+      group_models.push(Lib._createGroup(_.omit(options, 'groupBy'), options.allGroup.id || 'all'));
+    }
+    options.group_collection.reset(group_models);    
   };
 
   /**

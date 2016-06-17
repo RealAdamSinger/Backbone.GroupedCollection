@@ -102,6 +102,32 @@ describe('Backbone.GroupedCollection', function () {
       assert.equal(gc.get('Panthers').vc.length, 1);
     });
 
+    it('accepts allGroup option and groups models according to the groupBy function', function () {
+      var gc = Backbone.buildGroupedCollection({        
+        collection: collection,
+        groupBy: byClub,
+        allGroup: true
+      });
+      assert.deepEqual(gc.pluck('id').sort(), ['all', 'Penguins', 'Panthers'].sort());
+      assert.equal(gc.get('all').vc.length, 3);
+      assert.equal(gc.get('Penguins').vc.length, 2);
+      assert.equal(gc.get('Panthers').vc.length, 1);
+    });
+
+    it('accepts allGroup option with id and groups models according to the groupBy function', function () {
+      var gc = Backbone.buildGroupedCollection({        
+        collection: collection,
+        groupBy: byClub,
+        allGroup: {
+          id: "hello"
+        }
+      });
+      assert.deepEqual(gc.pluck('id').sort(), ['hello', 'Penguins', 'Panthers'].sort());
+      assert.equal(gc.get('hello').vc.length, 3);
+      assert.equal(gc.get('Penguins').vc.length, 2);
+      assert.equal(gc.get('Panthers').vc.length, 1);
+    });
+
     it('accepts a comparator function', function () {
       var gc = Backbone.buildGroupedCollection({
         collection: collection,
